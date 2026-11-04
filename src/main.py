@@ -3,6 +3,7 @@
 import sys
 from typing import Optional, Sequence
 
+from src.apt_packages import load_packages
 from src.errors import ToolError
 from src.options import Options, read_options
 
@@ -10,9 +11,16 @@ EXIT_ERROR = 1
 
 
 def run(options: Options) -> None:
-    """Выводит все параметры в формате ключ-значение."""
-    for key, value in options.as_pairs():
-        print(f"{key}={value}")
+    """Выводит прямые зависимости заданного пакета."""
+    if options.test_mode:
+        raise ToolError("--test-mode: not supported yet")
+    packages = load_packages(options.repository)
+    if options.package not in packages:
+        raise ToolError(
+            f"package not found in repository: {options.package}"
+        )
+    for name in packages[options.package]:
+        print(name)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:

@@ -2,7 +2,7 @@
 
 Практическая работа №2 по дисциплине «Конфигурационное управление».
 
-Состояние: выполнен этап 1 из 5 (минимальный прототип).
+Состояние: выполнен этап 2 из 5 (сбор данных).
 
 ## Общее описание
 
@@ -24,7 +24,15 @@
 Каждый параметр проверяется; при ошибке программа печатает `error: ...`
 и завершается с кодом 1.
 
-На этом этапе программа выводит все параметры в формате `ключ=значение`.
+На этом этапе программа выводит прямые зависимости пакета.
+Тестовый режим появится на этапе 3.
+
+### Откуда берутся данные
+
+Файл `Packages` репозитория Ubuntu состоит из блоков по одному на пакет.
+Зависимости — поля `Depends` и `Pre-Depends`. Из записи
+`debconf (>= 0.5) | debconf-2.0, libc6:any` берётся `debconf` и `libc6`:
+версии и архитектура отбрасываются, из альтернатив берётся первая.
 
 ### Исходные файлы
 
@@ -33,6 +41,7 @@
 | `src/main.py` | точка входа |
 | `src/options.py` | параметры и их проверка |
 | `src/errors.py` | тип ошибки `ToolError` |
+| `src/apt_packages.py` | скачивание и разбор файла `Packages` |
 
 ## Сборка и запуск тестов
 
@@ -59,18 +68,17 @@ http://archive.ubuntu.com/ubuntu/dists/jammy/main/binary-amd64/Packages.gz
 Демонстрация (файлы `.bat` и `.sh`):
 
 - `examples/demo_options` — все параметры и ошибки в них;
+- `examples/demo_direct` — прямые зависимости;
 
 ## Примеры использования
 
 ```
-$ ./run.sh --package bash --repository URL --max-depth 2
-package=bash
-repository=URL
-test_mode=false
-output=graph.svg
-max_depth=2
-filter=
+$ ./run.sh --package bash --repository URL
+libc6
+libtinfo6
+base-files
+debianutils
 
-$ ./run.sh --package bash --repository URL --max-depth abc
-error: --max-depth: 'abc' must be a positive integer
+$ ./run.sh --package no-such-package --repository URL
+error: package not found in repository: no-such-package
 ```
