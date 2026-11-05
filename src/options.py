@@ -4,7 +4,7 @@ import argparse
 import os
 import re
 from dataclasses import dataclass
-from typing import List, Optional, Sequence, Tuple
+from typing import Optional, Sequence
 from urllib.parse import urlparse
 
 from src.errors import ToolError
@@ -27,17 +27,6 @@ class Options:
     output: str = DEFAULT_OUTPUT
     max_depth: int = DEFAULT_MAX_DEPTH
     package_filter: str = ""
-
-    def as_pairs(self) -> List[Tuple[str, str]]:
-        """Возвращает параметры в виде пар ключ-значение."""
-        return [
-            ("package", self.package),
-            ("repository", self.repository),
-            ("test_mode", str(self.test_mode).lower()),
-            ("output", self.output),
-            ("max_depth", str(self.max_depth)),
-            ("filter", self.package_filter),
-        ]
 
 
 def build_parser() -> argparse.ArgumentParser:

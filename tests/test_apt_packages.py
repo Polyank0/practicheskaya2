@@ -105,10 +105,10 @@ class DownloadTest(unittest.TestCase):
 
 
 class MainTest(unittest.TestCase):
-    """Проверяет вывод прямых зависимостей."""
+    """Проверяет вывод для настоящего репозитория."""
 
     def test_prints_direct_dependencies(self) -> None:
-        """Программа печатает прямые зависимости пакета."""
+        """Программа печатает зависимости пакета."""
         output = io.StringIO()
         with unittest.mock.patch(
             "src.main.load_packages", return_value=parse_packages(SAMPLE)
@@ -117,8 +117,9 @@ class MainTest(unittest.TestCase):
                 "--package", "bash", "--repository", "http://host/Packages",
             ])
         self.assertEqual(code, 0)
-        expected = ["libc6", "libtinfo6", "base-files", "debianutils"]
-        self.assertEqual(output.getvalue().splitlines(), expected)
+        lines = output.getvalue().splitlines()
+        self.assertEqual(lines[0], "bash -> libc6")
+        self.assertEqual(lines[-1], "packages: 5, dependencies: 4")
 
     def test_unknown_package(self) -> None:
         """Отсутствующий пакет даёт ошибку."""
